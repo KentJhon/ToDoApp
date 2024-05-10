@@ -10,61 +10,184 @@
 </head>
 <body>
     <header>
-        <h1>ToDoApp<h1>
+        <h1>ToDoApp</h1>
         <a href="#" class="settings-icon"><i class='bx bx-cog'></i></a>
     </header>
-    <div class="create-note-container">
-        <div class="create-note">
-            <h2>Create Note</h2>
-            <form id="createNoteForm" action="{{ route('note.store') }}" method="POST">
-                @csrf
-                <div class="input-box">
-                    <input type="text" name="title" placeholder="Title" required>
+    <div class="container">
+        <div class="create-note-container">
+            <div class="create-note">
+                <h2>Create Note</h2>
+                <div>
+                    @if($errors->any())
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{$error}}</li>
+                        @endforeach
+                    </ul>
+                    @endif
                 </div>
-                <div class="input-box">
-                    <textarea name="description" placeholder="Description" required></textarea>
-                </div>
-                <button type="submit" id="createNoteBtn">Create</button>
-            </form>
+                <form id="createNoteForm" action="{{ route('note.store') }}" method="POST">
+                    @csrf
+                    <div class="input-box">
+                        <input type="text" name="title" placeholder="Title" required>
+                    </div>
+                    <div class="input-box">
+                        <textarea  name="description" placeholder="Description" required></textarea>
+                    </div>
+                    <input type="hidden" name="account_id" value="{{ $account_id }}">
+                    <button type="submit" id="createNoteBtn">Create</button>
+                </form>
+            </div>
         </div>
+        
+        <div class="task-container">
+            <h2>Tasks</h2>
+            @foreach($notes as $note)
+            <div class="task-item">
+                <form method="post" action="{{ route('note.update', ['id' => $note->note_id]) }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="task-title">
+                        <h4>Title:</h4>
+                        <input type="text" name="title" value="{{ $note->title }}" class="title-input" required>
+                    </div>
+                    <div class="note-description">
+                        <h4>Description:</h4>
+                        <textarea name="description" class="description-input" required>{{ $note->description }}</textarea>
+                    </div>
+                    <div class="status-container">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status">
+                            <option value="active" {{ $note->status === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="finished" {{ $note->status === 'finished' ? 'selected' : '' }}>Finished</option>
+                        </select>
+                    </div>
+                    <button type="submit">Update</button>
+                </form>
+
+                <form action="{{ route('note.destroy', ['id' => $note->note_id]) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" id="deleteBtn-{{ $note->note_id }}">Delete</button>
+                </form>    
+
+            </div>
+            @endforeach
+        </div>         
+    </div>
+    
+    <div class="settings-box" id="settingsBox">
+        <form id="updateAccountForm" action="{{ route('account.update', ['id' => $account->account_id]) }}" method="POST">
+        @csrf
+        @method('PUT')
+            <span class="close-icon">&times;</span>
+            <h1>Settings</h1>
+            <h3>Username:</h3>
+            <textarea name="username" class="Username-input" required>{{ old('username', $account->username ?? '') }}</textarea>
+            <h3>Password:</h3>
+            <textarea name="password" class="Password-input" required>{{ old('password', $account->password ?? '') }}</textarea>
+            <div class="update-account">        
+                <button id="update-btn" type="submit">Update</button>
+            </div>
+                
+        </form>
+        <form id="logoutForm" action="{{ route('account.logout') }}" method="POST">
+            @csrf
+            <button type="submit">Logout</button>
+        </form>
+
+        <form id="deleteAccountForm" action="{{ route('account.delete', ['id' => $account->account_id]) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button class="delete-btn" type="submit" id="deleteAccountBtn">Delete Account</button>
+        </form>        
+        
+         
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const createNoteForm = document.getElementById('createNoteForm');
-        const createNoteBtn = document.getElementById('createNoteBtn');
-
-        createNoteForm.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent default form submission
-
-            // Get form data
-            const formData = new FormData(createNoteForm);
-
-            // Make AJAX request
-            fetch('/note', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Add CSRF token for Laravel
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Note created successfully
-                    alert('Note created successfullgyyrtyuy!');
-                    // Optionally, you can redirect or update the UI here
-                } else {
-                    // Error creating note
-                    alert('Error creating note');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error creating note');
+        document.addEventListener("DOMContentLoaded", function() {
+            const settingsIcon = document.querySelector('.settings-icon');
+            const settingsBox = document.getElementById('settingsBox');
+            const closeIcon = document.querySelector('.close-icon');
+    
+            settingsIcon.addEventListener('click', function() {
+                settingsBox.classList.toggle('show');
+            });
+    
+            closeIcon.addEventListener('click', function() {
+                settingsBox.classList.remove('show');
             });
         });
-    });
-
+    
+        $(document).ready(function() {
+            // Handle delete account form submission
+            $('#deleteAccountForm').submit(function(event) {
+                event.preventDefault(); // Prevent default form submission behavior
+    
+                // Make a GET request to fetch associated note IDs
+                fetch(`/admin/accounts/{{ $account->account_id }}/notes`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error checking associated notes');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const noteIds = data.note_ids;
+    
+                        // If there are associated notes, delete them
+                        if (noteIds.length > 0) {
+                            // Send an AJAX request to delete associated notes
+                            $.ajax({
+                                url: `/admin/accounts/{{ $account->account_id }}/notes`,
+                                type: 'DELETE',
+                                data: { note_ids: noteIds, _token: '{{ csrf_token() }}' },
+                                success: function(response) {
+                                    // After deleting associated notes, delete the account
+                                    deleteAccountAndRedirectToLogin('{{ route("login.index") }}');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error deleting associated notes:', error);
+                                    alert('Error deleting associated notes');
+                                }
+                            });
+                        } else {
+                            // If there are no associated notes, directly delete the account
+                            deleteAccountAndRedirectToLogin('{{ route("login.index") }}');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error checking associated notes');
+                    });
+            });
+    
+            // Function to delete account and redirect to login page
+            function deleteAccountAndRedirectToLogin(redirectRoute) {
+                // Make a DELETE request to delete the account
+                fetch(`/account/{{ $account->account_id }}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = redirectRoute;
+                    } else {
+                        // If deletion fails, show an error message
+                        alert('Error deleting account');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting account');
+                });
+            }
+        });
     </script>
+    
+
 </body>
 </html>

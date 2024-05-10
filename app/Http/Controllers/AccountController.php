@@ -3,45 +3,67 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Note;
 use App\Models\Account;
-
-use  App\Models\NoteDetails;
-
+use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
-
 {
     public function index() {
         return view('register.index');
     }
 
-    public function admin(){
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('login.index');
+    }
+
+    public function admin()
+    {
         $accounts = Account::all();
-        return view('admin.index',['accounts' => $accounts]);
+        return view('admin.index', ['accounts' => $accounts]);
     }
 
     public function delete($id)
     {
-        $account = Account::find($id);
+        $account = Account::findOrFail($id);
 
-        if (!$account) {
-            return redirect()->back()->with('error', 'Account not found.');
-        }
+        // Retrieve associated note_ids from notes_details table
+        $noteIds = $account->notesDetails()->pluck('note_id')->toArray();
 
-        // Check if there are any related notes associated with the account
-        $relatedNotesExist = $account->notesDetails()->exists();
+        // Delete associated notes
+        Note::whereIn('note_id', $noteIds)->delete(); // Assuming 'id' is the primary key column name in the 'notes' table
 
-        // If related notes exist, delete them first
-        if ($relatedNotesExist) {
-            $account->notesDetails()->delete();
-        }
+        // Delete related records in notes_details table
+        $account->notesDetails()->delete();
 
-        // Then delete the account
+        // Delete the account
         $account->delete();
 
-        return redirect()->back()->with('success', 'Account and associated notes deleted successfully.');
+        return redirect()->route('admin.index')->with('success', 'Account and associated notes deleted successfully');
     }
+
+
+    public function deleteAcc($id)
+    {
+        $account = Account::findOrFail($id);
+
+        // Retrieve associated note_ids from notes_details table
+        $noteIds = $account->notesDetails()->pluck('note_id')->toArray();
+
+        // Delete associated notes
+        Note::whereIn('note_id', $noteIds)->delete(); // Assuming 'id' is the primary key column name in the 'notes' table
+
+        // Delete related records in notes_details table
+        $account->notesDetails()->delete();
+
+        // Delete the account
+        $account->delete();
+
+        return redirect()->route('login.index')->with('success', 'Account and associated notes deleted successfully');
+    }
+
 
     public function getAssociatedNotes($id)
     {
@@ -51,21 +73,40 @@ class AccountController extends Controller
             return response()->json(['error' => 'Account not found.'], 404);
         }
 
-        $notes = $account->notesDetails;
+        // Retrieve associated note_ids from notes_details table
+        $noteIds = $account->notesDetails()->pluck('note_id')->toArray();
 
-        return response()->json(['notes' => $notes]);
+        return response()->json(['note_ids' => $noteIds]);
     }
 
-    
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $data = $request->validate([
-            'username'=>'required',
-            'password'=>'required'
+            'username' => 'required',
+            'password' => 'required'
         ]);
-        
-        
+
         $newAccount = Account::create($data);
 
         return redirect(route('login.index'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        try {
+            $account = Account::findOrFail($id);
+            $account->username = $request->username;
+            $account->password = $request->password;
+            $account->save();
+
+            return redirect()->back()->with('success', 'Account updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error updating Account');
+        }
     }
 }

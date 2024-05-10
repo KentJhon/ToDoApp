@@ -1,12 +1,18 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
 body {
     padding: 0;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: black;
+    background: linear-gradient(to bottom right, #ff61d2, #fe9090);
 }
 
 header {
-    background-color: rgb(105, 105, 105);
+    background: linear-gradient(to bottom right, #ff512f, #dd2476);
     color: white;
     padding: 20px 0;
     display: flex;
@@ -18,50 +24,248 @@ header h1 {
     margin-left: 50px;
     font-size: 30px;
 }
-
-.settings-icon {
-    margin-right: 50px;
-    margin-left: auto;
+h2 {
     font-size: 30px;
-}
-
-.create-note-container {
-    margin-top: 20px;
-    margin-left: 20px;
-    border: 2px solid white;
+    text-align: center;
+    width: 100%;
+    background: linear-gradient(to bottom right, #ff512f, #dd2476);
+    border-radius: 10px;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    width: 20%;
 }
 
+/*Create Notes*/
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
 .create-note h2 {
     color: white;
     font-size: 1.5rem;
     margin-bottom: 15px;
 }
-
+.create-note-container,
+.task-container {
+    border-radius: 25px;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border: 1px solid black;
+    padding: 20px;
+    background: white;
+    width: 20%;
+}
+.create-note-container {
+    flex: 1 1 40%;
+    margin-right: 20px;
+}
 .create-note .input-box input,
 .create-note .input-box textarea {
     width: calc(100% - 10px);
     padding: 10px;
     margin-bottom: 15px;
     margin-right: 10px;
-    border: 1px solid white;
+    border: 1px solid black;
     border-radius: 5px;
     background-color: transparent;
+    color: black;
+}
+
+/*tasks*/
+.task-item {
+    color: black;
+    margin-top: 20px;
+}
+.task-container {
+    flex: 1 1 60%;
     color: white;
 }
 
+.task-container h2 {
+    text-align: center;
+}
+
+.task-title,
+.task-description {
+    display: flex;
+    align-items: center;
+}
+
+.task-title h4,
+.task-description h4 {
+    margin-right: 10px;
+}
+.note-description h4 {
+    margin-top: 10px;
+}
+.title-input,
+.description-input {
+    border-radius: 5px;
+    border-width: 1px;
+    flex: 1;
+    padding: 5px;
+    margin: 0;
+}
+.description-input {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/*buttonnnns*/
 .create-note button {
     padding: 10px 20px;
-    background-color: white;
-    color: black;
+    background-color: black;
+    color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 50px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .create-note button:hover {
-    background-color: #f0f0f0;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+.status-container {
+    display: inline-block;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.button-container {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: -5px;
+}
+.update-button,
+.delete-btn button {
+    display: inline-block;
+}
+.status-container label {
+    margin-right: 10px;
+    color: black;
+    font-weight: bold;
+}
+.status-container select {
+    background: black;
+    border-radius: 5px;
+    color: white;
+}
+.buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.buttons button {
+    margin-right: 10px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+}
+
+.status-container {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.task-item button {
+    margin-left: 10px;
+}
+.task-container button {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.task-container button:hover {
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+.status-container,
+.deleteBtn,
+.update-btn {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/*settings nga part*/
+.settings-icon {
+    margin-right: 50px;
+    margin-left: auto;
+    font-size: 30px;
+    color: white;
+}
+.settings-box {
+    color: white;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 600px;
+    background: linear-gradient(to bottom right, #ff512f, #dd2476);
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+}
+.settings-box h1 {
+    text-align: center;
+    margin-top: 25%;
+    font-size: 50px;
+    color: black;
+}
+.settings-box h3 {
+    margin-left: 50px;
+    color: black;
+}
+.settings-box button {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.settings-box button:hover {
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+.settings-box.show {
+    display: inline-block;
+}
+.Username-input,
+.Password-input {
+    width: 70%;
+    padding: 10px;
+    margin-left: 15%;
+    margin-top: 5px;
+    border: solid black;
+    border-radius: 20px;
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+}
+
+#logoutForm {
+    bottom: 10px;
+    right: 10px;
 }

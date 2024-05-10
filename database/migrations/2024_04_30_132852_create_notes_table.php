@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('notes_id');
             $table->string('title');
             $table->text('content');
+            $table->text('status');                    
             $table->timestamps();
         });
     }

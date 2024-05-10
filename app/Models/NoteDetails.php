@@ -13,7 +13,11 @@ class NoteDetails extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class, 'account_id', 'account_id');
     }
 
+    public function note()
+    {
+        return $this->belongsTo(Note::class, 'note_id', 'note_id');
+    }
 }
