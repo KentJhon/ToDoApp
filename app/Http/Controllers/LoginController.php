@@ -25,11 +25,13 @@ class LoginController extends Controller
   public function login(Request $request)
   {
     $request->validate([
+      'username' => ['required', 'string', 'max:255'],
       'email' => 'required|string|email|max:255',
       'password' => 'required|string|min:8',
     ]);
 
     $username = $request->input('username');
+    $username = $request->input('email');
     $password = $request->input('password');
 
     $user = Account::where('username', $username)->first();
