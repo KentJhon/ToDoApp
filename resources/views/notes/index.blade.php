@@ -44,7 +44,7 @@
             <h2>Tasks</h2>
             @foreach($notes as $note)
             <div class="task-item">
-                <form method="post" action="{{ route('note.update', ['id' => $note->note_id]) }}">
+                <form method="post" action="{{ route('note.update', ['id' => $note->notes_id]) }}">
                     @csrf
                     @method('PUT')
                     <div class="task-title">
@@ -65,10 +65,10 @@
                     <button type="submit">Update</button>
                 </form>
 
-                <form action="{{ route('note.destroy', ['id' => $note->note_id]) }}" method="POST">
+                <form action="{{ route('note.destroy', ['id' => $note->notes_id]) }}" method="POST">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" id="deleteBtn-{{ $note->note_id }}">Delete</button>
+                    <button type="submit" id="deleteBtn-{{ $note->notes_id }}">Delete</button>
                 </form>    
 
             </div>

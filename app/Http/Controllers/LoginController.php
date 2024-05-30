@@ -13,12 +13,20 @@ class LoginController extends Controller
   {
     return view('login.index');
   }
-
+  
+  protected function credentials(Request $request)
+  {
+      $email = filter_var($request->email, FILTER_SANITIZE_EMAIL);
+      $password = $request->password;
+  
+      return ['email' => $email, 'password' => $password];
+  }
+  
   public function login(Request $request)
   {
     $request->validate([
-      'username' => 'required',
-      'password' => 'required',
+      'email' => 'required|string|email|max:255',
+      'password' => 'required|string|min:8',
     ]);
 
     $username = $request->input('username');
@@ -27,7 +35,7 @@ class LoginController extends Controller
     $user = Account::where('username', $username)->first();
 
     if ($user && $password === $user->password) {
-      if ($username === 'admin' && $password === '123') {
+      if ($username === 'Admin') {
         return redirect()->route('admin.index');
       } else {
         return redirect()->route('note.index', ['account_id' => $user->account_id]);

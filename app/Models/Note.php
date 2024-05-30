@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'note_id';
+    protected $primaryKey = 'notes_id';
     
     protected $fillable = [
         'title',
@@ -17,6 +17,6 @@ class Note extends Model
 
     public function noteDetails()
     {
-        return $this->hasMany(NoteDetails::class, 'note_id', 'note_id');
+        return $this->hasMany(NoteDetails::class, 'notes_id', 'notes_id');
     }
 }

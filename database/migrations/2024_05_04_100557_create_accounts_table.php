@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id('account_id');
             $table->string('username');
+            $table->string('email');
+            $table->string('phone');
             $table->string('password');
             $table->timestamps();
         });

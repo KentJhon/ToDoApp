@@ -11,9 +11,9 @@ return new class extends Migration
     {
         Schema::create('notes_details', function (Blueprint $table) {
             $table->id('notes_details_id');
-            $table->unsignedBigInteger('note_id')->nullable();
+            $table->unsignedBigInteger('notes_id')->nullable();
             $table->unsignedBigInteger('account_id');
-            $table->foreign('note_id')->references('note_id')->on('notes')->onDelete('cascade');
+            $table->foreign('notes_id')->references('notes_id')->on('notes')->onDelete('cascade');
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });

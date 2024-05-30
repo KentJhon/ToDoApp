@@ -44,11 +44,11 @@ class NoteController extends Controller
             $note->save();
     
             // Get the ID of the newly created note
-            $note_id = $note->note_id;
+            $notes_id = $note->notes_id;
     
             // Associate the note with the account in the notes_details table
             DB::table('notes_details')->insert([
-                'note_id' => $note_id,
+                'notes_id' => $notes_id,
                 'account_id' => $request->account_id,
             ]);
     

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckAccountOwner;
+use App\Http\Kernel;
 
 define('LARAVEL_START', microtime(true));
 
