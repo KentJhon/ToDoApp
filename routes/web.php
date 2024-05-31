@@ -23,19 +23,18 @@ Route::get('/account/register',[AccountController::class, 'index'])->name('regis
 Route::post('/account/register',[AccountController::class, 'store'])->name('register.store');
 Route::put('/accounts/{id}', [AccountController::class, 'update'])->name('accounts.update');
 
+<<<<<<< HEAD
 //route ni
 Route::put('/accounts/{id}', [AccountController::class, 'updateUserInfo'])->name('accounts.update.user');
 
 
+=======
+>>>>>>> parent of 075cbb1 (gikapuy nko)
 
 Route::get('/admin', [AccountController::class, 'admin'])->name('admin.index');
 Route::delete('/admin/accounts/{id}', [AccountController::class, 'delete'])->name('admin.accounts.delete');
 Route::get('/admin/accounts/{id}/notes', [AccountController::class, 'getAssociatedNotes'])->name('admin.accounts.notes');
-
-// Update the logout route to allow both GET and POST methods
 Route::post('/logout', [AccountController::class, 'logout'])->name('account.logout');
-
-
 Route::delete('/account/{id}', [AccountController::class, 'deleteAcc'])->name('account.delete');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login.index');

@@ -18,11 +18,10 @@ class AccountController extends Controller
 
     public function logout()
     {
-    
         Auth::logout();
         return redirect()->route('login.index');
     }
-    
+
     public function admin()
     {
         $accounts = Account::all();
@@ -110,15 +109,12 @@ class AccountController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:accounts,email',new EmailAddress],
             'phone' => ['required', 'string', 'min:11', new PhoneNumber, 'unique:accounts'],
             'password' => ['required', 'string', 'min:8', 'confirmed',new StrongPassword],
-        ]);
-        
+            ]);
+
         try {
             $account = Account::findOrFail($id);
             $account->username = $request->username;
-            if ($request->filled('password')) {
-                $account->password = $request->password;
-            }
-
+            $account->password = $request->password;
             $account->save();
 
             return redirect()->back()->with('success', 'Account updated successfully');
@@ -126,6 +122,7 @@ class AccountController extends Controller
             return redirect()->back()->with('error', 'Error updating Account');
         }
     }
+<<<<<<< HEAD
 
     //Mao ni ang naa sa settingss
     public function updateUserInfo(Request $request, $id)
@@ -145,4 +142,6 @@ class AccountController extends Controller
         }
     }
 
+=======
+>>>>>>> parent of 075cbb1 (gikapuy nko)
 }

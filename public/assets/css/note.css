@@ -269,12 +269,3 @@ h2 {
     bottom: 10px;
     right: 10px;
 }
-.button-container {
-    display: flex; 
-    justify-content: center; 
-    margin-top: 15px;
-}
-
-.button-container form {
-    margin: 0 5px; 
-}

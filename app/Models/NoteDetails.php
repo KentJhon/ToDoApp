@@ -18,6 +18,6 @@ class NoteDetails extends Model
 
     public function note()
     {
-        return $this->belongsTo(Note::class, 'notes_id', 'notes_id');
+        return $this->belongsTo(Note::class, 'note_id', 'note_id');
     }
 }

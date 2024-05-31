@@ -55,29 +55,23 @@
             var strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
             var phoneNumberRegex = /^\d{11}$/;
             var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-            if (!emailRegex.test(email)) {
-                alert("Please input a valid email.");
-                document.getElementById("email").focus();
-                return false;
-            }
-            if (!phoneNumberRegex.test(phone)) {
-                alert("Phone number must be all numbers and exactly 11 digits long.");
-                document.getElementById("phone").focus();
+           
+            if (password != confirmPassword) {
+                alert("Passwords do not match.");
                 return false;
             }
             if (!strongPasswordRegex.test(password)) {
                 alert("Password is not strong enough. It must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-                document.getElementById("password").focus();
                 return false;
             }
-            if (password != confirmPassword) {
-                alert("Passwords do not match.");
-                document.getElementById("confirmPassword").focus();
+            if (!phoneNumberRegex.test(phone)) {
+                alert("Phone number must be all numbers and exactly 11 digits long.");
                 return false;
             }
-
-            return true;
+            if (!emailRegex.test(email)) {
+                alert("Please input a valid email.");
+                return false;
+            }
         }
     </script>
 </body>
