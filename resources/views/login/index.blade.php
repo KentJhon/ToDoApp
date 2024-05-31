@@ -18,13 +18,14 @@
             <div class="login">
                 <form method="POST" action="{{ route('login.submit') }}">
                     @csrf
+                    <!-- Removed @method('PUT') as login should use POST method -->
                     <h1>Login</h1>
                     <div class="input-box">
                         <input type="text" name="username" placeholder="Username" required>
                         <i class="bx bxs-user"></i>
                     </div>
                     <div class="input-box">
-                        <input type="text" name="email" placeholder="Email" required>
+                        <input type="email" name="email" placeholder="Email" required>
                         <i class="bx bxs-envelope"></i>
                     </div>
                     <div class="input-box">

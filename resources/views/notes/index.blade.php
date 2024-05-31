@@ -17,22 +17,14 @@
         <div class="create-note-container">
             <div class="create-note">
                 <h2>Create Note</h2>
-                <div>
-                    @if($errors->any())
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{$error}}</li>
-                        @endforeach
-                    </ul>
-                    @endif
-                </div>
+
                 <form id="createNoteForm" action="{{ route('note.store') }}" method="POST">
                     @csrf
                     <div class="input-box">
                         <input type="text" name="title" placeholder="Title" required>
                     </div>
                     <div class="input-box">
-                        <textarea  name="description" placeholder="Description" required></textarea>
+                        <textarea  name="content" placeholder="Content" required></textarea>
                     </div>
                     <input type="hidden" name="account_id" value="{{ $account_id }}">
                     <button type="submit" id="createNoteBtn">Create</button>
@@ -42,67 +34,71 @@
         
         <div class="task-container">
             <h2>Tasks</h2>
-            @foreach($notes as $note)
             <div class="task-item">
+            @foreach($notes as $note)
                 <form method="post" action="{{ route('note.update', ['id' => $note->notes_id]) }}">
                     @csrf
                     @method('PUT')
                     <div class="task-title">
                         <h4>Title:</h4>
-                        <input type="text" name="title" value="{{ $note->title }}" class="title-input" required>
+                        <input type="text" name="title" value="" class="title-input" required>
                     </div>
                     <div class="note-description">
                         <h4>Description:</h4>
-                        <textarea name="description" class="description-input" required>{{ $note->description }}</textarea>
+                        <textarea name="description" class="description-input" required></textarea>
                     </div>
                     <div class="status-container">
-                        <label for="status">Status:</label>
-                        <select id="status" name="status">
-                            <option value="active" {{ $note->status === 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="finished" {{ $note->status === 'finished' ? 'selected' : '' }}>Finished</option>
-                        </select>
+                        <form action="{{ route('note.update', ['id' => $note->notes_id]) }}" method="POST" style="display: inline;">
+
+                            <label for="status">Status:</label>
+                            <select id="status" name="status">
+                                <option value="active" {{ $note->status === 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="finished" {{ $note->status === 'finished' ? 'selected' : '' }}>Finished</option>
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
+                        <form action="{{ route('note.destroy', ['id' => $note->notes_id]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" id="deleteBtn-{{ $note->notes_id }}">Delete</button>
+                        </form>
                     </div>
-                    <button type="submit">Update</button>
-                </form>
-
-                <form action="{{ route('note.destroy', ['id' => $note->notes_id]) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" id="deleteBtn-{{ $note->notes_id }}">Delete</button>
-                </form>    
-
-            </div>
+                </form> 
             @endforeach
+            </div>
         </div>         
     </div>
     
     <div class="settings-box" id="settingsBox">
-        <form id="updateAccountForm" action="{{ route('account.update', ['id' => $account->account_id]) }}" method="POST">
-        @csrf
-        @method('PUT')
+    
+        <form id="updateAccountForm" action="{{ route('accounts.update.user', ['id' => $account->account_id]) }}" method="POST">
+            @csrf
+            @method('PUT')
             <span class="close-icon">&times;</span>
             <h1>Settings</h1>
             <h3>Username:</h3>
             <textarea name="username" class="Username-input" required>{{ old('username', $account->username ?? '') }}</textarea>
             <h3>Password:</h3>
             <textarea name="password" class="Password-input" required>{{ old('password', $account->password ?? '') }}</textarea>
-            <div class="update-account">        
-                <button id="update-btn" type="submit">Update</button>
+            <div class="button-container">
+                <div class="update-account">
+                    <button id="update-btn" type="submit">Update</button>
+                </div>              
             </div>
-                
-        </form>
-        <form id="logoutForm" action="{{ route('account.logout') }}" method="POST">
-            @csrf
-            <button type="submit">Logout</button>
-        </form>
+        </form>    
 
+        
         <form id="deleteAccountForm" action="{{ route('account.delete', ['id' => $account->account_id]) }}" method="POST">
             @csrf
             @method('DELETE')
             <button class="delete-btn" type="submit" id="deleteAccountBtn">Delete Account</button>
-        </form>        
-        
-         
+        </form>
+
+        <form id="logoutForm" action="{{ route('account.logout') }}" method="GET">                   
+            @csrf
+            <button type="submit">Logout</button>
+        </form>
+   
     </div>
 
     <script>
@@ -188,6 +184,14 @@
         });
     </script>
     
+    <script>
+        document.getElementById('logoutForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
 
+            // Submit the form
+            this.submit();
+        });
+    </script>
+    <!-- dri ibutang ang script sa validation sa settings ni ha, pag tuplok sa update -->
 </body>
 </html>

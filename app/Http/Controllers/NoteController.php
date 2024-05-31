@@ -29,7 +29,7 @@ class NoteController extends Controller
         $account_id = $request->input('account_id');
         $request->validate([
             'title' => 'required|string',
-            'description' => 'required|string',
+            'content' => 'required|string',
             'account_id' => 'required|numeric',
         ]);
     
@@ -37,21 +37,22 @@ class NoteController extends Controller
     
         try {
             // Create a new note
-            $note = new Note();
-            $note->title = $request->title;
-            $note->description = $request->description; 
-            $note->status = 'active';
-            $note->save();
-    
-            // Get the ID of the newly created note
-            $notes_id = $note->notes_id;
-    
-            // Associate the note with the account in the notes_details table
-            DB::table('notes_details')->insert([
-                'notes_id' => $notes_id,
-                'account_id' => $request->account_id,
-            ]);
-    
+            // Create a new note
+        $note = new Note();
+        $note->title = $request->title;
+        $note->content = $request->content; 
+        $note->status = 'active';
+        $note->save();
+
+        // Get the ID of the newly created note
+        $note_id = $note->id;
+
+        // Associate the note with the account in the notes_details table
+         DB::table('notes_details')->insert([
+        'notes_id' => $note_id,
+        'account_id' => $request->account_id,
+        ]);
+
             // Commit the transaction if everything succeeds
             DB::commit();
     
@@ -89,14 +90,14 @@ class NoteController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
-            'description' => 'required|string',
+            'content' => 'required|string',
             'status' => 'required|in:active,finished', 
         ]);
 
         try {
             $note = Note::findOrFail($id);
             $note->title = $request->title;
-            $note->description = $request->description;
+            $note->content = $request->content;
             $note->status = $request->status;
             $note->save();
 

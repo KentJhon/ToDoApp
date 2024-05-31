@@ -18,10 +18,11 @@ class AccountController extends Controller
 
     public function logout()
     {
+    
         Auth::logout();
         return redirect()->route('login.index');
     }
-
+    
     public function admin()
     {
         $accounts = Account::all();
@@ -109,12 +110,15 @@ class AccountController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:accounts,email',new EmailAddress],
             'phone' => ['required', 'string', 'min:11', new PhoneNumber, 'unique:accounts'],
             'password' => ['required', 'string', 'min:8', 'confirmed',new StrongPassword],
-            ]);
-
+        ]);
+        
         try {
             $account = Account::findOrFail($id);
             $account->username = $request->username;
-            $account->password = $request->password;
+            if ($request->filled('password')) {
+                $account->password = $request->password;
+            }
+
             $account->save();
 
             return redirect()->back()->with('success', 'Account updated successfully');
@@ -122,4 +126,23 @@ class AccountController extends Controller
             return redirect()->back()->with('error', 'Error updating Account');
         }
     }
+
+    //Mao ni ang naa sa settings
+    public function updateUserInfo(Request $request, $id)
+    {  
+        try {
+            $account = Account::findOrFail($id);
+            $account->username = $request->username;
+            if ($request->filled('password')) {
+                $account->password = $request->password;
+            }
+
+            $account->save();
+
+            return redirect()->back()->with('success', 'Account updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error updating Account');
+        }
+    }
+
 }

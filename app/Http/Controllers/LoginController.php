@@ -31,7 +31,7 @@ class LoginController extends Controller
     ]);
 
     $username = $request->input('username');
-    $username = $request->input('email');
+    $email = $request->input('email');
     $password = $request->input('password');
 
     $user = Account::where('username', $username)->first();
