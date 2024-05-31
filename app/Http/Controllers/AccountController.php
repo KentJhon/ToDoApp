@@ -127,7 +127,7 @@ class AccountController extends Controller
         }
     }
 
-    //Mao ni ang naa sa settings
+    //Mao ni ang naa sa settingss
     public function updateUserInfo(Request $request, $id)
     {  
         try {

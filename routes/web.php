@@ -23,7 +23,7 @@ Route::get('/account/register',[AccountController::class, 'index'])->name('regis
 Route::post('/account/register',[AccountController::class, 'store'])->name('register.store');
 Route::put('/accounts/{id}', [AccountController::class, 'update'])->name('accounts.update');
 
-//route
+//route ni
 Route::put('/accounts/{id}', [AccountController::class, 'updateUserInfo'])->name('accounts.update.user');
 
 
