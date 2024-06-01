@@ -29,7 +29,7 @@ class NoteController extends Controller
         $account_id = $request->input('account_id');
         $request->validate([
             'title' => 'required|string',
-            'description' => 'required|string',
+            'content' => 'required|string',
             'account_id' => 'required|numeric',
         ]);
     
@@ -39,7 +39,7 @@ class NoteController extends Controller
             // Create a new note
             $note = new Note();
             $note->title = $request->title;
-            $note->description = $request->description; 
+            $note->content = $request->content; 
             $note->status = 'active';
             $note->save();
     
@@ -89,14 +89,14 @@ class NoteController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
-            'description' => 'required|string',
+            'content' => 'required|string',
             'status' => 'required|in:active,finished', 
         ]);
 
         try {
             $note = Note::findOrFail($id);
             $note->title = $request->title;
-            $note->description = $request->description;
+            $note->content = $request->content;
             $note->status = $request->status;
             $note->save();
 

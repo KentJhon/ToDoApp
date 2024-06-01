@@ -32,7 +32,7 @@
                         <input type="text" name="title" placeholder="Title" required>
                     </div>
                     <div class="input-box">
-                        <textarea  name="description" placeholder="Description" required></textarea>
+                        <textarea  name="content" placeholder="Content" required></textarea>
                     </div>
                     <input type="hidden" name="account_id" value="{{ $account_id }}">
                     <button type="submit" id="createNoteBtn">Create</button>
@@ -53,7 +53,7 @@
                     </div>
                     <div class="note-description">
                         <h4>Description:</h4>
-                        <textarea name="description" class="description-input" required>{{ $note->description }}</textarea>
+                        <textarea name="content" class="description-input" required>{{ $note->content }}</textarea>
                     </div>
                     <div class="status-container">
                         <label for="status">Status:</label>

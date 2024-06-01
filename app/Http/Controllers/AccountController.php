@@ -102,7 +102,7 @@ class AccountController extends Controller
             return redirect(route('login.index'));
     }
 
-    public function update(Request $request, $id)
+    /*public function updateUserInfo(Request $request, $id)
     {
         $request->validate([
             'username' => ['required', 'string', 'max:255'],
@@ -121,11 +121,10 @@ class AccountController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error updating Account');
         }
-    }
-<<<<<<< HEAD
+    }*/
 
     //Mao ni ang naa sa settingss
-    public function updateUserInfo(Request $request, $id)
+    public function update(Request $request, $id)
     {  
         try {
             $account = Account::findOrFail($id);
@@ -142,6 +141,4 @@ class AccountController extends Controller
         }
     }
 
-=======
->>>>>>> parent of 075cbb1 (gikapuy nko)
 }
