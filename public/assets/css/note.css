@@ -211,8 +211,8 @@ h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 700px;
-    height: 600px;
+    width: 1000px;
+    height: 800px;
     background: linear-gradient(to bottom right, #ff512f, #dd2476);
     border: 2px solid white;
     border-radius: 5px;
@@ -247,7 +247,9 @@ h2 {
     display: inline-block;
 }
 .Username-input,
-.Password-input {
+.Password-input,
+.Phone-input,
+.Email-input {
     width: 70%;
     padding: 10px;
     margin-left: 15%;
@@ -268,4 +270,7 @@ h2 {
 #logoutForm {
     bottom: 10px;
     right: 10px;
+}
+.error-message {
+    color: white !important;
 }

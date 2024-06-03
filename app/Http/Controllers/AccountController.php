@@ -101,44 +101,41 @@ class AccountController extends Controller
     
             return redirect(route('login.index'));
     }
+    public function checkUsername(Request $request)
+{
+    $username = $request->input('username');
+    $exists = User::where('username', $username)->exists();
 
-    /*public function updateUserInfo(Request $request, $id)
-    {
-        $request->validate([
-            'username' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:accounts,email',new EmailAddress],
-            'phone' => ['required', 'string', 'min:11', new PhoneNumber, 'unique:accounts'],
-            'password' => ['required', 'string', 'min:8', 'confirmed',new StrongPassword],
-            ]);
+    return response()->json(['exists' => $exists]);
+}
 
-        try {
-            $account = Account::findOrFail($id);
-            $account->username = $request->username;
-            $account->password = $request->password;
-            $account->save();
 
-            return redirect()->back()->with('success', 'Account updated successfully');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error updating Account');
-        }
-    }*/
-
-    //Mao ni ang naa sa settingss
+    //settings -- Modified for validation
     public function update(Request $request, $id)
-    {  
-        try {
-            $account = Account::findOrFail($id);
-            $account->username = $request->username;
-            if ($request->filled('password')) {
-                $account->password = $request->password;
-            }
+{
+    $request->validate([
+        'username' => 'required|string|max:255',
+        'password' => [
+            'required',
+            'string',
+            'min:8',
+            'regex:/[a-z]/',      // must contain at least one lowercase letter
+            'regex:/[A-Z]/',      // must contain at least one uppercase letter
+            'regex:/[0-9]/',      // must contain at least one digit
+            'regex:/[@$!%*?&]/',  // must contain a special character
+        ],
+    ]);
 
-            $account->save();
+    try {
+        $account = Account::findOrFail($id);
+        $account->username = $request->username;
+        $account->password = ($request->password); 
+        $account->save();
 
-            return redirect()->back()->with('success', 'Account updated successfully');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error updating Account');
-        }
+        return redirect()->back()->with('success', 'Account updated successfully');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Error updating account');
     }
+}
 
 }

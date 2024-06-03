@@ -105,5 +105,6 @@ class NoteController extends Controller
             return redirect()->back()->with('error', 'Error updating note');
         }
     }
+    
 
 }

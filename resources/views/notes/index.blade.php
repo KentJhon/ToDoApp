@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('assets/css/note.css') }}">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <title>Homepage</title>
+    <style>
+        .error-message {
+            color: white !important;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #password-error,
+        #email-error,
+        #phone-error {
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
+
 <body>
     <header>
         <h1>ToDoApp</h1>
         <a href="#" class="settings-icon"><i class='bx bx-cog'></i></a>
     </header>
     <div class="container">
+        <!-- Create Note Section -->
         <div class="create-note-container">
             <div class="create-note">
                 <h2>Create Note</h2>
@@ -21,7 +40,7 @@
                     @if($errors->any())
                     <ul>
                         @foreach($errors->all() as $error)
-                            <li>{{$error}}</li>
+                        <li>{{$error}}</li>
                         @endforeach
                     </ul>
                     @endif
@@ -32,14 +51,15 @@
                         <input type="text" name="title" placeholder="Title" required>
                     </div>
                     <div class="input-box">
-                        <textarea  name="content" placeholder="Content" required></textarea>
+                        <textarea name="content" placeholder="Content" required></textarea>
                     </div>
                     <input type="hidden" name="account_id" value="{{ $account_id }}">
                     <button type="submit" id="createNoteBtn">Create</button>
                 </form>
             </div>
         </div>
-        
+
+        <!-- Task Container -->
         <div class="task-container">
             <h2>Tasks</h2>
             @foreach($notes as $note)
@@ -69,63 +89,115 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit" id="deleteBtn-{{ $note->notes_id }}">Delete</button>
-                </form>    
-
+                </form>
             </div>
             @endforeach
-        </div>         
+        </div>
     </div>
-    
+
+    <!-- Settings Box -->
     <div class="settings-box" id="settingsBox">
-        <form id="updateAccountForm" action="{{ route('account.update', ['id' => $account->account_id]) }}" method="POST">
-        @csrf
-        @method('PUT')
+        <form id="updateAccountForm" action="{{ route('accounts.update', ['id' => $account->account_id]) }}" method="POST">
+            @csrf
+            @method('PUT')
             <span class="close-icon">&times;</span>
             <h1>Settings</h1>
             <h3>Username:</h3>
-            <textarea name="username" class="Username-input" required>{{ old('username', $account->username ?? '') }}</textarea>
+            <textarea name="username" id="username" class="Username-input" required>{{ old('username', $account->username ?? '') }}</textarea>
+            <div id="username-error" class="error-message"></div>
+            <h3>Email:</h3>
+            <input type="email" name="email" class="Email-input" required value="{{ old('email', $account->email ?? '') }}">
+            <div id="email-error" class="error-message"></div>
+            <h3>Phone Number:</h3>
+            <input type="text" name="phone" class="Phone-input" required value="{{ old('phone', $account->phone ?? '') }}">
+            <div id="phone-error" class="error-message"></div>
             <h3>Password:</h3>
-            <textarea name="password" class="Password-input" required>{{ old('password', $account->password ?? '') }}</textarea>
-            <div class="update-account">        
+            <input type="password" name="password" class="Password-input" required>
+            <div id="password-error"></div>
+            <div class="update-account">
                 <button id="update-btn" type="submit">Update</button>
             </div>
-                
         </form>
         <form id="logoutForm" action="{{ route('account.logout') }}" method="POST">
             @csrf
             <button type="submit">Logout</button>
         </form>
-
         <form id="deleteAccountForm" action="{{ route('account.delete', ['id' => $account->account_id]) }}" method="POST">
             @csrf
             @method('DELETE')
             <button class="delete-btn" type="submit" id="deleteAccountBtn">Delete Account</button>
-        </form>        
-        
-         
+        </form>
     </div>
 
+    <!-- Scripts -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const settingsIcon = document.querySelector('.settings-icon');
             const settingsBox = document.getElementById('settingsBox');
             const closeIcon = document.querySelector('.close-icon');
-    
-            settingsIcon.addEventListener('click', function() {
+
+            settingsIcon.addEventListener('click', function () {
                 settingsBox.classList.toggle('show');
             });
-    
-            closeIcon.addEventListener('click', function() {
+
+            closeIcon.addEventListener('click', function () {
                 settingsBox.classList.remove('show');
             });
+
+            function isStrongPassword(password) {
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+                return passwordRegex.test(password);
+            }
+
+            function isValidPhoneNumber(phone) {
+                const phoneNumberRegex = /^\d{11}$/;
+                return phoneNumberRegex.test(phone);
+            }
+
+            function isValidEmail(email) {
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                return emailRegex.test(email);
+            }
+
+            document.getElementById('updateAccountForm').addEventListener('submit', function (event) {
+                const password = document.querySelector('.Password-input').value;
+                const passwordError = document.getElementById('password-error');
+                const email = document.querySelector('.Email-input').value;
+                const emailError = document.getElementById('email-error');
+                const phone = document.querySelector('.Phone-input').value;
+                const phoneError = document.getElementById('phone-error');
+
+                passwordError.textContent = ''; // Clear previous error messages
+                emailError.textContent = '';
+                phoneError.textContent = '';
+
+                let isValid = true;
+
+                if (!isStrongPassword(password)) {
+                    passwordError.textContent = 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+                    isValid = false;
+                }
+
+                if (!isValidEmail(email)) {
+                    emailError.textContent = 'Please enter a valid email address.';
+                    isValid = false;
+                }
+
+                if (!isValidPhoneNumber(phone)) {
+                    phoneError.textContent = 'Phone number must be all numbers and exactly 11 digits long.';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault(); // Prevent form submission if any validation fails
+                }
+            });
         });
-    
-        $(document).ready(function() {
-            // Handle delete account form submission
-            $('#deleteAccountForm').submit(function(event) {
-                event.preventDefault(); // Prevent default form submission behavior
-    
-                // Make a GET request to fetch associated note IDs
+
+        $(document).ready(function () {
+            $('#deleteAccountForm').submit(function (event) {
+                event.preventDefault();
+
                 fetch(`/admin/accounts/{{ $account->account_id }}/notes`)
                     .then(response => {
                         if (!response.ok) {
@@ -135,25 +207,21 @@
                     })
                     .then(data => {
                         const noteIds = data.note_ids;
-    
-                        // If there are associated notes, delete them
+
                         if (noteIds.length > 0) {
-                            // Send an AJAX request to delete associated notes
                             $.ajax({
                                 url: `/admin/accounts/{{ $account->account_id }}/notes`,
                                 type: 'DELETE',
-                                data: { note_ids: noteIds, _token: '{{ csrf_token() }}' },
-                                success: function(response) {
-                                    // After deleting associated notes, delete the account
+                                data: { note_ids: noteIds, _token: getCsrfToken() },
+                                success: function (response) {
                                     deleteAccountAndRedirectToLogin('{{ route("login.index") }}');
                                 },
-                                error: function(xhr, status, error) {
+                                error: function (xhr, status, error) {
                                     console.error('Error deleting associated notes:', error);
                                     alert('Error deleting associated notes');
                                 }
                             });
                         } else {
-                            // If there are no associated notes, directly delete the account
                             deleteAccountAndRedirectToLogin('{{ route("login.index") }}');
                         }
                     })
@@ -162,41 +230,28 @@
                         alert('Error checking associated notes');
                     });
             });
-    
-            // Function to delete account and redirect to login page
+
             function deleteAccountAndRedirectToLogin(redirectRoute) {
-                // Make a DELETE request to delete the account
                 fetch(`/account/{{ $account->account_id }}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = redirectRoute;
-                    } else {
-                        // If deletion fails, show an error message
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = redirectRoute;
+                        } else {
+                            alert('Error deleting account');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
                         alert('Error deleting account');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error deleting account');
-                });
+                    });
             }
         });
     </script>
-    
-
-<<<<<<< HEAD
-            // Submit the form
-            this.submit();
-        });
-    </script>
-    <!-- dri ibutang ang script sa validation sa settings ni ha, pag tuplok sa update -->
-    
-=======
->>>>>>> parent of 075cbb1 (gikapuy nko)
 </body>
+
 </html>
