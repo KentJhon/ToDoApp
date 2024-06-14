@@ -25,7 +25,6 @@
         }
     </style>
 </head>
-
 <body>
     <header>
         <h1>ToDoApp</h1>
@@ -128,7 +127,6 @@
             <button class="delete-btn" type="submit" id="deleteAccountBtn">Delete Account</button>
         </form>
     </div>
-
     <!-- Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -145,7 +143,7 @@
             });
 
             function isStrongPassword(password) {
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*_-~`]{8,}$/;
                 return passwordRegex.test(password);
             }
 

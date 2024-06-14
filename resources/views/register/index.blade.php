@@ -31,6 +31,7 @@
                         <input type="text" id="phone" name="phone" placeholder="Phone Number" required>
                         <i class="bx bxs-phone"></i>
                     </div>
+                    <div id="phoneError" class="error-message"></div>
                     <div class="input-box">
                         <input type="password" id="password" name="password" placeholder="Password" required>
                         <i class="bx bxs-lock-alt"></i>
@@ -41,11 +42,19 @@
                     </div>
                     <button type="submit" class="btn">Create Account</button>
                 </form>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li style=" color: red;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
-
-    <script>
+<script>
     function validateForm(event) {
         event.preventDefault(); // Prevent form submission to handle async check
 
@@ -58,6 +67,8 @@
         var strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
         var phoneNumberRegex = /^\d{11}$/;
         var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        
+        var isValid = true;
 
         if (password != confirmPassword) {
             alert("Passwords do not match.");
@@ -68,33 +79,37 @@
             return false;
         }
         if (!phoneNumberRegex.test(phone)) {
-            alert("Phone number must be all numbers and exactly 11 digits long.");
-            return false;
+            document.getElementById("phoneError").textContent = "Phone number must be all numbers and exactly 11 digits long.";
+            isValid = false;
+        } else {
+            document.getElementById("phoneError").textContent = "";
         }
         if (!emailRegex.test(email)) {
             alert("Please input a valid email.");
             return false;
         }
 
-        // Check if the username already exists
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "{{ route('check_username') }}", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-CSRF-TOKEN", "{{ csrf_token() }}");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var response = JSON.parse(xhr.responseText);
-                if (response.exists) {
-                    document.getElementById("usernameError").textContent = "Username already exists.";
-                } else {
-                    document.getElementById("usernameError").textContent = "";
-                    // If username doesn't exist, submit the form
-                    document.getElementById("registerForm").submit();
+        if (isValid) {
+            // Check if the username already exists
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{{ route('check_username') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("X-CSRF-TOKEN", "{{ csrf_token() }}");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.exists) {
+                        document.getElementById("usernameError").textContent = "Username already exists.";
+                    } else {
+                        document.getElementById("usernameError").textContent = "";
+                        // If username doesn't exist, submit the form
+                        document.getElementById("registerForm").submit();
+                    }
                 }
-            }
-        };
-        xhr.send(JSON.stringify({ "username": username }));
+            };
+            xhr.send(JSON.stringify({ "username": username }));
+        }
     }
-    </script>
+</script>
 </body>
 </html>
